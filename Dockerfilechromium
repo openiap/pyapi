@@ -1,0 +1,53 @@
+FROM fedora:36
+ENV CHROMIUM_VERSION 109.0
+ENV XVFB_VERSION 1.20
+
+  # chromedriver-${CHROMIUM_VERSION}* \
+  # chromium-${CHROMIUM_VERSION}* \
+RUN dnf upgrade -y --refresh \
+  && dnf install wget git nano -y \
+    chromedriver \
+    chromium \
+    npm \
+    php \
+    zip \
+    nodejs \
+    python3-pip \
+    tzdata \
+    xorg-x11-server-Xvfb-${XVFB_VERSION}* \
+  && dnf clean all
+
+COPY bin/chromium-browser.sh /tmp/chromium-browser
+RUN mv /usr/lib64/chromium-browser/chromium-browser /usr/lib64/chromium-browser/chromium-browser-original \
+  && ln -sfv /tmp/chromium-browser /usr/lib64/chromium-browser/chromium-browser
+RUN chmod +x /usr/lib64/chromium-browser/chromium-browser
+RUN ln -sf /usr/lib64/chromium-browser/chromium-browser /usr/bin/google-chrome
+RUN ln -sf /usr/bin/python3 /usr/bin/python
+
+RUN mkdir /.cache
+RUN chmod -R 777 /.cache
+
+RUN pip3 install --no-cache-dir rpa selenium robotframework robotframework-selenium2library selenium
+
+RUN pip3 install --no-cache-dir openiap==0.0.25
+
+RUN useradd -ms /bin/bash openiapuser
+USER openiapuser
+# WORKDIR /home/openiapuser
+WORKDIR /tmp
+ENV home=/tmp
+ENV OPENSSL_CONF=/dev/null
+
+# RUN wget https://github.com/tebelorg/Tump/releases/download/v1.0.0/TagUI_Linux.zip -O rpa_python.zip
+# RUN unzip rpa_python.zip && mv tagui .tagui && chmod -R 755 .tagui/src && rm rpa_python.zip
+# copy src/init.py .
+# RUN python3 init.py
+
+copy src/agent.py .
+CMD [ "python3", "agent.py" ]
+# CMD [ "bash" ]
+
+
+# ENV OPENSSL_CONF=/etc/ssl/
+
+

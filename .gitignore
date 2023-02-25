@@ -1,0 +1,9 @@
+/dist
+/node_modules
+/proto
+/package
+/build
+/.vscode
+__pycache__
+openiap.egg-info
+/make
