@@ -67,7 +67,8 @@ class Client():
         request = base_pb2.Envelope(command="signin")
         if(username == None and password==None):
             jwt = os.environ.get("jwt", "")
-            if jwt != "":
+            if jwt == "": jwt = self.jwt
+            if jwt != "" and jwt != None:
                 username=jwt
             else:
                 uri = urlparse(self.url)
