@@ -29,7 +29,7 @@ RUN chmod -R 777 /.cache
 
 RUN pip3 install --no-cache-dir rpa selenium robotframework robotframework-selenium2library selenium
 
-RUN pip3 install --no-cache-dir openiap==0.0.25
+RUN pip3 install --no-cache-dir openiap
 
 RUN useradd -ms /bin/bash openiapuser
 USER openiapuser

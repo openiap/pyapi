@@ -68,7 +68,7 @@ async def getpackage(fileid):
     c = openiap.Client()
     await c.Signin()
     result = await c.DownloadFile(Id=fileid)
-    c.Close()
+    # c.Close()
     if(result.filename == ""):
         raise ValueError("Filename missing or not found")
     if(pathlib.Path(result.filename).suffix == ".zip"):
@@ -95,7 +95,7 @@ async def getpackagefrom(packageid):
         raise ValueError("Package not found")
     fileid = pack[0]["fileid"]
     result = await c.DownloadFile(Id=fileid)
-    c.Close()
+    # c.Close()
     if(result.filename == ""):
         raise ValueError("Filename missing or not found")
     if(pathlib.Path(result.filename).suffix == ".zip"):
