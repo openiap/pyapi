@@ -25,6 +25,7 @@ class Client():
         self.url = url
         self.scheme = ""
         self.replyqueue = ""
+        self.jwt = ""
         if(self.url == None or self.url == ""): 
             self.url = os.environ.get("apiurl", "")
             if(self.url == ""): self.url = os.environ.get("grpcapiurl", "")
