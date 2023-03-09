@@ -1,7 +1,7 @@
 import sys, os, pathlib, traceback, subprocess
 import asyncio
 import openiap
-import zipfile, shutil, gzip
+import zipfile, shutil, gzip, tarfile
 from openiap.client import GracefulKiller
 
 def getpackagepath(packagepath, first=True):
@@ -74,19 +74,57 @@ async def getpackage(fileid):
     if(pathlib.Path(result.filename).suffix == ".zip"):
         with zipfile.ZipFile(result.filename, 'r') as zip_ref:
             zip_ref.extractall(directory)
+        os.remove(result.filename)
     elif(pathlib.Path(result.filename).suffix == ".gz"):
         gunzip_shutil(result.filename, directory)
+        os.remove(result.filename)
+    elif(pathlib.Path(result.filename).suffix == ".tgz"):
+        with tarfile.open(result.filename, "r:gz") as tar:
+            tar.extractall(path=directory)
+        os.remove(result.filename)
     else:
         shutil.copyfile(result.filename, os.path.join(directory, result.filename))
+        os.remove(result.filename)
+    return directory
+async def getpackagefrom(packageid):
+    directory = "package"
+    c = openiap.Client()
+    await c.Signin()
+    pack = await c.Query("agents", {"_id": packageid, "_type": "package"})
+    if(len(pack) == 0):
+        raise ValueError("Package not found")
+    fileid = pack[0]["fileid"]
+    result = await c.DownloadFile(Id=fileid)
+    c.Close()
+    if(result.filename == ""):
+        raise ValueError("Filename missing or not found")
+    if(pathlib.Path(result.filename).suffix == ".zip"):
+        with zipfile.ZipFile(result.filename, 'r') as zip_ref:
+            zip_ref.extractall(directory)
+        os.remove(result.filename)
+    elif(pathlib.Path(result.filename).suffix == ".gz"):
+        gunzip_shutil(result.filename, directory)
+        os.remove(result.filename)
+    elif(pathlib.Path(result.filename).suffix == ".tgz"):
+        with tarfile.open(result.filename, "r:gz") as tar:
+            tar.extractall(path=directory)
+        os.remove(result.filename)
+    else:
+        shutil.copyfile(result.filename, os.path.join(directory, result.filename))
+        os.remove(result.filename)
     return directory
 if __name__ == '__main__':
     print(f"Python version {sys.version} {sys.version_info}")
     killer = GracefulKiller()
     packagepath = os.environ.get("packagepath", "")
     fileid = os.environ.get("fileid", "")
+    packageid = os.environ.get("packageid", "")
     gitrepo = os.environ.get("gitrepo", "")
+    
     if(gitrepo != ""):
         packagepath = gitclone(gitrepo)
+    if(packageid != ""):
+        packagepath = asyncio.run(getpackagefrom(packageid))
     if(fileid != ""):
         packagepath = asyncio.run(getpackage(fileid))
     packagepath = getpackagepath(packagepath)
