@@ -1,6 +1,7 @@
-from python:alpine
+# from python:alpine xvfb
+from alpine:3.17
 RUN apk update
-RUN apk add git
+RUN apk add git python3 py3-pip
 RUN addgroup -S openiapgroup && adduser -S openiapuser -G openiapgroup
 RUN mkdir /.cache
 RUN chmod -R 777 /.cache
