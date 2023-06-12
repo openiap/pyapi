@@ -116,13 +116,17 @@ class protowrap():
     def __grpc_connect_and_listen(client, itr):
         try:
             uri = urlparse(client.url)
+            grpc_max_receive_message_length = client.grpc_max_receive_message_length
             if(uri.port == 443 or uri.port == "443"):
                 logging.info(f"Connecting to {uri.hostname}:{uri.port} using ssl credentials")
                 credentials = grpc.ssl_channel_credentials()
-                client.chan = grpc.secure_channel(f"{uri.hostname}:{uri.port}", credentials, options=(('grpc.ssl_target_name_override', uri.hostname),))
+                client.chan = grpc.secure_channel(f"{uri.hostname}:{uri.port}", credentials,
+                                                  options=(
+                                                    ('grpc.ssl_target_name_override', uri.hostname),
+                                                    ('grpc.max_receive_message_length', grpc_max_receive_message_length),))
             else:
                 logging.info(f"Connecting to {uri.hostname}:{uri.port}")
-                client.chan = grpc.insecure_channel(f"{uri.hostname}:{uri.port}")
+                client.chan = grpc.insecure_channel(f"{uri.hostname}:{uri.port}", options=(('grpc.max_receive_message_length', grpc_max_receive_message_length),))
             fut = grpc.channel_ready_future(client.chan)
             while not fut.done():
                 logging.debug("channel is not ready")
