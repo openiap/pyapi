@@ -21,8 +21,9 @@ class Client():
                 None, lambda s=string: sys.stdout.write(s+' '))
         return await asyncio.get_event_loop().run_in_executor(
                 None, sys.stdin.readline)
-    def __init__(self, url:str = ""):
+    def __init__(self, url:str = "", grpc_max_receive_message_length:int = 4194304):
         self.url = url
+        self.grpc_max_receive_message_length = grpc_max_receive_message_length
         self.scheme = ""
         self.replyqueue = ""
         self.jwt = ""
