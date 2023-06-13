@@ -78,9 +78,9 @@ class Client():
                     username=uri.username
                     password=uri.password
         if(password== None or password == ""):
-            request.data.Pack(base_pb2.SigninRequest(jwt=username, ping=ping, agent="python", version="0.0.32", validateonly=validateonly, longtoken=longtoken))
+            request.data.Pack(base_pb2.SigninRequest(jwt=username, ping=ping, agent="python", version="0.0.33", validateonly=validateonly, longtoken=longtoken))
         else:
-            request.data.Pack(base_pb2.SigninRequest(username=username, password=password, ping=ping, agent="python", version="0.0.32", validateonly=validateonly, longtoken=longtoken))
+            request.data.Pack(base_pb2.SigninRequest(username=username, password=password, ping=ping, agent="python", version="0.0.33", validateonly=validateonly, longtoken=longtoken))
         result:base_pb2.SigninResponse = await protowrap.RPC(self, request)
         self.jwt = result.jwt
         self.user = result.user
