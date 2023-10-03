@@ -78,9 +78,9 @@ class Client():
                     username=uri.username
                     password=uri.password
         if(password== None or password == ""):
-            request.data.Pack(base_pb2.SigninRequest(jwt=username, ping=ping, agent="python", version="0.0.33", validateonly=validateonly, longtoken=longtoken))
+            request.data.Pack(base_pb2.SigninRequest(jwt=username, ping=ping, agent="python", version="0.0.34", validateonly=validateonly, longtoken=longtoken))
         else:
-            request.data.Pack(base_pb2.SigninRequest(username=username, password=password, ping=ping, agent="python", version="0.0.33", validateonly=validateonly, longtoken=longtoken))
+            request.data.Pack(base_pb2.SigninRequest(username=username, password=password, ping=ping, agent="python", version="0.0.34", validateonly=validateonly, longtoken=longtoken))
         result:base_pb2.SigninResponse = await protowrap.RPC(self, request)
         self.jwt = result.jwt
         self.user = result.user
@@ -143,7 +143,7 @@ class Client():
         result:workitems_pb2.PopWorkitemResponse = await protowrap.RPC(self, request)
         if(result == None): return None
         return result.workitem;
-    async def UpdateWorkitem(self, workitem, files: any = None, compressed:bool=False):
+    async def UpdateWorkitem(self, workitem, files: any = None, compressed:bool=False, ignoremaxretries:bool = False):
         request = base_pb2.Envelope(command="updateworkitem")
         _files = []
         for f in workitem.files:
@@ -157,7 +157,7 @@ class Client():
                 else:
                     with open(filepath, mode="rb") as content:
                         _files.append({"filename":filename, "compressed": compressed, "file": content.read()})
-        uwi = workitems_pb2.UpdateWorkitemRequest(workitem = workitem, files = _files);
+        uwi = workitems_pb2.UpdateWorkitemRequest(workitem = workitem, files = _files, ignoremaxretries = ignoremaxretries);
         request.data.Pack(uwi)
         result:workitems_pb2.UpdateWorkitemResponse = await protowrap.RPC(self, request)
         if(result == None): return None

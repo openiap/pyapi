@@ -50,8 +50,9 @@ async def pyqueue(client: openiap.Client, msg: base_pb2.Envelope, payload: dict)
     # workitem = asyncio.run(self.c.PopWorkitem("pyqueue", True, True))
     workitem = await client.PopWorkitem("pyqueue", True, True)
     print("pyqueue PopWorkitem completed")
-    workitem.state = "successful"
-    workitem = await client.UpdateWorkitem(workitem)
+    # workitem.state = "successful"
+    workitem.state = "retry"
+    workitem = await client.UpdateWorkitem(workitem, ignoremaxretries=True)
 
     try:
         logging.info(f"findme222: {str(payload['name'])}")
