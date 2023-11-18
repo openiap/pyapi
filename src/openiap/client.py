@@ -115,11 +115,15 @@ class Client():
         reply.data.Pack(queues_pb2.QueueMessageRequest(queuename=queuename, data=res, striptoken=striptoken, correlationId=correlationId, replyto=replyto))
         self.grpcqueue.put(reply)
         if(future!=None):
+            #print("Queued, waiting for response send to ", replyto)
             msg:queues_pb2.QueueMessageResponse = await future
+            # print("got response...")
             payload = json.loads(msg.data)
             if("payload" in payload):
                 payload = payload["payload"]
             return payload
+        # else:
+        #     print("Queued, not waiting for response")
     async def PushWorkitem(self, wiq:str, name:str, payload:dict, files: any = None, wiqid:str = None, nextrun: datetime = None, priority: int = 2, compressed: bool = False):
         request = base_pb2.Envelope(command="pushworkitem")
         _files = []

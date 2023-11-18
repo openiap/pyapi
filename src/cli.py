@@ -241,6 +241,16 @@ async def main():
                 if(results!=None):
                     for item in results:
                         print(item["name"])
+            elif text == "qqq":
+                payload = {
+                    "command": "invoke",
+                    "workflowid": "5e0b52194f910e30ce9e3e49",
+                    "data": {
+                        "test": "please, did you find me ?"
+                    }
+                }
+                result = await c.QueueMessage(queuename="5e0c8a75ea7ae0004e415e27", payload= payload, rpc=True)
+                print("RESULT", result["data"])
             elif text == "pp":
                 filepath = "/home/allan/Pictures/allan.png"
                 for i in range(1, 5):
