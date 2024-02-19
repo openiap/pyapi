@@ -16,12 +16,35 @@ from proto import base_pb2, queues_pb2, workitems_pb2, querys_pb2, watch_pb2
 
 
 class Client():
+    """
+    Client class for managing connections to OpenFlow and performing operations.
+
+    This class provides an interface for connecting to an OpenFlow server, working
+    with OpenFlow database, workitem queues, and message queue.
+
+    Attributes:
+        url (str): The URL for the server connection.
+        grpc_max_receive_message_length (int): Maximum length of a gRPC message.
+
+    Methods:
+        ainput: Asynchronously gets input from the user.
+        Close: Closes the current connection.
+        onmessage: Asynchronous event handler for messages.
+        onconnected: Asynchronous event handler for connection establishment.
+    """
     async def ainput(self, string: str) -> str:
         await asyncio.get_event_loop().run_in_executor(
                 None, lambda s=string: sys.stdout.write(s+' '))
         return await asyncio.get_event_loop().run_in_executor(
                 None, sys.stdin.readline)
     def __init__(self, url:str = "", grpc_max_receive_message_length:int = 4194304):
+        """
+        Initializes the Client instance.
+
+        Args:
+            url (str): The URL for the server connection. Defaults to environment variable or a predefined URL.
+            grpc_max_receive_message_length (int): Maximum length of a gRPC message. Defaults to 4194304.
+        """
         self.url = url
         self.grpc_max_receive_message_length = grpc_max_receive_message_length
         self.scheme = ""
@@ -78,14 +101,15 @@ class Client():
                     username=uri.username
                     password=uri.password
         if(password== None or password == ""):
-            request.data.Pack(base_pb2.SigninRequest(jwt=username, ping=ping, agent="python", version="0.0.34", validateonly=validateonly, longtoken=longtoken))
+            request.data.Pack(base_pb2.SigninRequest(jwt=username, ping=ping, agent="python", version="0.0.36", validateonly=validateonly, longtoken=longtoken))
         else:
-            request.data.Pack(base_pb2.SigninRequest(username=username, password=password, ping=ping, agent="python", version="0.0.34", validateonly=validateonly, longtoken=longtoken))
+            request.data.Pack(base_pb2.SigninRequest(username=username, password=password, ping=ping, agent="python", version="0.0.36", validateonly=validateonly, longtoken=longtoken))
         result:base_pb2.SigninResponse = await protowrap.RPC(self, request)
         self.jwt = result.jwt
         self.user = result.user
         return result.user
     async def DownloadFile(self, Id:str=None, Filename:str=None):
+        #: Download a file from openflow. Id is the id of the file, Filename is the name of the file to save it to.
         result = await protowrap.DownloadFile(self, Id, Filename)
         return result
     async def GetElement(self, xpath:str):
