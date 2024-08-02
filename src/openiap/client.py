@@ -108,9 +108,9 @@ class Client():
         self.jwt = result.jwt
         self.user = result.user
         return result.user
-    async def DownloadFile(self, Id:str=None, Filename:str=None):
-        #: Download a file from openflow. Id is the id of the file, Filename is the name of the file to save it to.
-        result = await protowrap.DownloadFile(self, Id, Filename)
+    async def DownloadFile(self, Id:str=None, Filename:str=None, OutPath: str=None):
+        #: Download a file from openflow. Id is the id of the file, Filename is the name of the file to save it to, OutPath is the path where the file should be saved.
+        result = await protowrap.DownloadFile(self, Id, Filename, OutPath)
         return result
     async def GetElement(self, xpath:str):
         request = base_pb2.Envelope(command="getelement")
